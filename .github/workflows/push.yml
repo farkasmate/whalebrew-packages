@@ -33,13 +33,14 @@ jobs:
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
           docker buildx create --use
         echo ::endgroup::
+        echo ${{ secrets.DOCKER_HUB_PASSWORD }} | base64 -d | docker login --password-stdin -u matefarkas
         echo ::group::build image ${{ matrix.image }}:latest
-          docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 -t ${{ matrix.image }} ${{ matrix.image }}
+          docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 -t matefarkas/whalebrew-${{ matrix.image }} -t matefarkas/whalebrew-alt-tag-${{ matrix.image }} ${{ matrix.image }}
         echo ::endgroup::
         if [ -e "${{ matrix.image }}/tags.yaml" ]; then
           for tag in $(cat "${{ matrix.image }}/tags.yaml" | docker run --rm -i whalebrew/yq  -r '.versions[]'); do
             echo ::group::build image ${{ matrix.image }}:${tag}
-              docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 -t ${{ matrix.image }}:${tag} --build-arg VERSION=${tag} ${{ matrix.image }}
+              docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64/v8 -t matefarkas/whalebrew-${{ matrix.image }}:${tag} -t matefarkas/whalebrew-alt-tag-${{ matrix.image }}:${tag} --build-arg VERSION=${tag} ${{ matrix.image }}
             echo ::endgroup::
           done
         fi
