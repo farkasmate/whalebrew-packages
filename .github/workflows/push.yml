@@ -21,7 +21,6 @@ jobs:
             image:
             - figlet
             - jq
-            - terraform
     steps:
     - uses: actions-go/modified@master
       id: is-modified
