@@ -4,7 +4,7 @@ on: # rebuild any PRs and main branch changes
   push:
     branches:
     - 'master'
-    - 're-builld-all'
+    - 'arm'
 
 jobs:
   all-image-build-success:
@@ -28,7 +28,7 @@ jobs:
       with:
         pattern: ${{ matrix.image }}/**
     - uses: actions/checkout@v1
-      if: steps.is-modified.outputs.modified == 'true' || (github.event_name == 'push' && github.event.ref == 'refs/heads/re-builld-all')
+      if: steps.is-modified.outputs.modified == 'true' || (github.event_name == 'push' && github.event.ref == 'refs/heads/arm')
     - run: |
         echo ::group::build image ${{ matrix.image }}:latest
           docker build -t ${{ matrix.image }} ${{ matrix.image }}
@@ -40,4 +40,4 @@ jobs:
             echo ::endgroup::
           done
         fi
-      if: steps.is-modified.outputs.modified == 'true' || (github.event_name == 'push' && github.event.ref == 'refs/heads/re-builld-all')
+      if: steps.is-modified.outputs.modified == 'true' || (github.event_name == 'push' && github.event.ref == 'refs/heads/arm')
